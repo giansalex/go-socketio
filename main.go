@@ -18,8 +18,9 @@ func main() {
 		so.Join("chat")
 		so.On("chat message", func(msg string) {
 			log.Println("Receive: " + so.Id() + " -> " + msg)
-			// so.BroadcastTo("chat", "chat message", msg)
+			so.BroadcastTo("chat", "chat message", msg)
 			err := so.Emit("chat message", msg)
+			// server.BroadcastTo("chat", "hola que tal")
 
 			if err != nil {
 				log.Println("Error Emitting:", err)

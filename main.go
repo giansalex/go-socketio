@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -10,27 +9,21 @@ import (
 
 func main() {
 	server, err := socketio.NewServer(nil)
+
 	if err != nil {
 		log.Fatal(err)
 	}
 	server.On("connection", func(so socketio.Socket) {
-		log.Println("on connection")
+		log.Println("on connection, max: ", server.GetMaxConnection())
 		so.Join("chat")
 		so.On("chat message", func(msg string) {
-			m := make(map[string]interface{})
-			m["a"] = "你好"
-			e := so.Emit("cn1111", m)
+			log.Println("Receive: " + so.Id() + " -> " + msg)
+			// so.BroadcastTo("chat", "chat message", msg)
+			err := so.Emit("chat message", msg)
 
-			fmt.Println("\n\n")
-
-			b := make(map[string]string)
-			b["u-a"] = "中文内容"
-			m["b-c"] = b
-			e = so.Emit("cn2222", m)
-			log.Println(e)
-
-			log.Println("emit:", so.Emit("chat message", msg))
-			so.BroadcastTo("chat", "chat message", msg)
+			if err != nil {
+				log.Println("Error Emitting:", err)
+			}
 		})
 		// Socket.io acknowledgement example
 		// The return type may vary depending on whether you will return
